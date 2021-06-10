@@ -593,7 +593,7 @@ def fmin(func, x0, args=(), xtol=1e-4, ftol=1e-4, maxiter=None, maxfun=None,
 def _minimize_neldermead(func, x0, args=(), callback=None,
                          maxiter=None, maxfev=None, disp=False,
                          return_all=False, initial_simplex=None,
-                         xatol=1e-4, fatol=1e-4, adaptive=False, bounds=None,
+                         xatol=1e-4, fatol=1e-4, adaptive=False, bounds=None, accf=None,
                          **unknown_options):
     """
     Minimization of scalar function of one or more variables using the
@@ -746,8 +746,11 @@ def _minimize_neldermead(func, x0, args=(), callback=None,
     one2np1 = list(range(1, N + 1))
     fsim = np.empty((N + 1,), float)
 
-    for k in range(N + 1):
-        fsim[k] = func(sim[k])
+    if accf is None:
+        for k in range(N + 1):
+            fsim[k] = func(sim[k])
+    else:
+        fsim = accf(sim)
 
     ind = np.argsort(fsim)
     fsim = np.take(fsim, ind, 0)
