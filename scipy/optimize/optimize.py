@@ -814,11 +814,18 @@ def _minimize_neldermead(func, x0, args=(), callback=None,
                         doshrink = 1
 
                 if doshrink:
-                    for j in one2np1:
-                        sim[j] = sim[0] + sigma * (sim[j] - sim[0])
-                        if bounds is not None:
-                            sim[j] = np.clip(sim[j], lower_bound, upper_bound)
-                        fsim[j] = func(sim[j])
+                    if accf is None:
+                        for j in one2np1:
+                            sim[j] = sim[0] + sigma * (sim[j] - sim[0])
+                            if bounds is not None:
+                                sim[j] = np.clip(sim[j], lower_bound, upper_bound)
+                            fsim[j] = func(sim[j])
+                    else:
+                        for j in one2np1:
+                            sim[j] = sim[0] + sigma * (sim[j] - sim[0])
+                            if bounds is not None:
+                                sim[j] = np.clip(sim[j], lower_bound, upper_bound)
+                        fsim[1:] = accf(sim[1:])
 
         ind = np.argsort(fsim)
         sim = np.take(sim, ind, 0)
